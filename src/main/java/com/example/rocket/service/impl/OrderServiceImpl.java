@@ -8,6 +8,7 @@ import com.example.rocket.produce.TransactionProducer;
 import com.example.rocket.service.OrderService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.rocketmq.client.exception.MQClientException;
+import org.apache.rocketmq.client.producer.TransactionSendResult;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -56,11 +57,11 @@ public class OrderServiceImpl implements OrderService {
 
     //前端调用，只用于向RocketMQ发送事务消息
     @Override
-    public void createOrder(OrderDTO order) throws MQClientException {
+    public TransactionSendResult createOrder(OrderDTO order) throws MQClientException {
         long time = Instant.now().toEpochMilli();
         order.setId(time);
         order.setOrderNo(String.valueOf(time));
-        producer.send(JSON.toJSONString(order), topic);
+        return producer.send(JSON.toJSONString(order), topic);
     }
 }
 

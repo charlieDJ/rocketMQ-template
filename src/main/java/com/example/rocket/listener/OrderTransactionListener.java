@@ -12,6 +12,8 @@ import org.apache.rocketmq.common.message.MessageExt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.concurrent.TimeUnit;
+
 @Slf4j
 @Component
 public class OrderTransactionListener implements TransactionListener {
@@ -31,6 +33,7 @@ public class OrderTransactionListener implements TransactionListener {
             String body = new String(message.getBody());
             OrderDTO order = JSONObject.parseObject(body, OrderDTO.class);
             orderService.createOrder(order, message.getTransactionId());
+            TimeUnit.SECONDS.sleep(2);
             state = LocalTransactionState.COMMIT_MESSAGE;
             log.info("本地事务已提交。{}", message.getTransactionId());
         } catch (Exception e) {
